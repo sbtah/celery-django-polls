@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import requests
 
@@ -8,7 +9,10 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from polls.forms import YourForm
-from polls.tasks import sample_task
+from polls.tasks import sample_task, task_process_notification
+
+
+logger = logging.getLogger(__name__)
 
 
 # Helpers
@@ -64,4 +68,15 @@ def webhook_test(request):
 
     # blocking process
     requests.post("https://httpbin.org/delay/5")
+    return HttpResponse("Pong!")
+
+
+@csrf_exempt
+def webhook_test_async(request):
+    """
+    User Celery worker to handle the notification.
+    """
+
+    task = task_process_notification.delay()
+    logger.info(task.id)
     return HttpResponse("Pong!")
