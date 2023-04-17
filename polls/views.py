@@ -3,8 +3,9 @@ import random
 import requests
 
 from celery.result import AsyncResult
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from polls.forms import YourForm
 from polls.tasks import sample_task
@@ -54,3 +55,13 @@ def task_status(request):
                 "state": state,
             }
         return JsonResponse(response)
+
+
+@csrf_exempt
+def webhook_test(request):
+    # if not random.choice([0, 1]):
+    #     raise Exception()
+
+    # blocking process
+    requests.post("https://httpbin.org/delay/5")
+    return HttpResponse("Pong!")
