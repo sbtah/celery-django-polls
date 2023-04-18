@@ -4,6 +4,8 @@ import requests
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from celery.signals import task_postrun
+from polls.consumers import notify_channel_layer
 
 
 logger = get_task_logger(__name__)
@@ -26,3 +28,13 @@ def task_process_notification(self):
     except Exception as e:
         logger.error("Esception raised. Retrying in 5 seconds ...")
         raise self.retry(exc=e, countdown=5)
+
+
+@task_postrun.connect
+def task_postrun_handler(task_id, **kwargs):
+    """
+    When celery task finish, send notification to Django channel_layer.
+    Django channel would receive the event and then send it to the web client.
+    """
+
+    notify_channel_layer(task_id)
