@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "polls",
     "channels",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -130,4 +131,12 @@ CHANNEL_LAYERS = {
             "hosts": [(os.environ.get("CHANNELS_REDIS", "redis://127.0.0.1:6379/0"))],
         },
     }
+}
+
+
+CELERY_BEAT_SCHEDULE = {
+    # "task-clear-session": {
+    #     "task": "task_clear_session",
+    #     "schedule": 5.0,
+    # }
 }
