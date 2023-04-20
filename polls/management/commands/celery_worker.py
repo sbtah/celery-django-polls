@@ -24,7 +24,9 @@ def restart_celery():
             print("Process is not running or PID is invalid")
             pass
 
-    subprocess.call(shlex.split(f"{celery_worker_cmd} --loglevel=info"))
+    subprocess.call(
+        shlex.split(f"{celery_worker_cmd} --loglevel=info -Q high_priority,default")
+    )
 
 
 class Command(BaseCommand):

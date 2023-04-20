@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+from kombu import Queue
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -139,4 +141,24 @@ CELERY_BEAT_SCHEDULE = {
     #     "task": "task_clear_session",
     #     "schedule": 5.0,
     # }
+}
+
+CELERY_TASK_DEFAULT_QUEUE = "default"
+
+
+# Force all queues to be explicitly listed in CELERY_TASK_QUEUES to help prevent typos.
+CELERY_TASK_CREATE_MISSING_QUEUES = False
+
+
+CELERY_TASK_QUEUES = (
+    # Need to define default queue here or exception would be raised.
+    Queue("default"),
+    Queue("high_priority"),
+    Queue("low_priority"),
+)
+
+CELERY_TASK_ROUTES = {
+    "core.celery.*": {
+        "queue": "high_priority",
+    }
 }
